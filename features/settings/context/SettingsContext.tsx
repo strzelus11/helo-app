@@ -7,6 +7,7 @@ import {
 	STORAGE_KEY,
 	ThemeMode,
 	Language,
+	TextSize,
 } from "../types";
 import { loadSettings, saveSettings } from "../utils/storage";
 
@@ -14,8 +15,12 @@ type SettingsCtx = {
 	settings: Settings;
 	setSettings: React.Dispatch<React.SetStateAction<Settings>>;
 	setThemeMode: (mode: ThemeMode) => void;
-	toggleDark: () => void;
 	setLanguage: (language: Language) => void;
+	setTextSize: (language: TextSize) => void;
+	toggleVoice: () => void;
+	setVoiceEnabled: (enabled: boolean) => void;
+	toggleOrientation: () => void;
+	setOrientationEnabled: (enabled: boolean) => void;
 };
 
 const Ctx = createContext<SettingsCtx | null>(null);
@@ -54,55 +59,87 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 		saveSettings(STORAGE_KEY, settings);
 	}, [settings]);
 
-	// Apply <html> class + keep localStorage.theme in sync (for inline theme script)
 	useEffect(() => {
 		if (typeof document === "undefined" || typeof window === "undefined") {
 			return;
 		}
-
 		const root = document.documentElement;
 
+		const applyTheme = (isDark: boolean) => {
+			if (isDark) {
+				root.classList.add("dark");
+				root.classList.remove("light");
+			} else {
+				root.classList.add("light");
+				root.classList.remove("dark");
+			}
+		};
+
 		if (settings.themeMode === "system") {
-			root.classList.remove("light", "dark");
 			window.localStorage.removeItem("theme");
-			return;
+			const mql = window.matchMedia("(prefers-color-scheme: dark)");
+			applyTheme(mql.matches);
+			const handler = (event: MediaQueryListEvent) => {
+				applyTheme(event.matches);
+			};
+			mql.addEventListener("change", handler);
+			return () => {
+				mql.removeEventListener("change", handler);
+			};
 		}
 
 		const isDark = settings.themeMode === "dark";
-
-		if (isDark) {
-			root.classList.add("dark");
-			root.classList.remove("light");
-			window.localStorage.setItem("theme", "dark");
-		} else {
-			root.classList.add("light");
-			root.classList.remove("dark");
-			window.localStorage.setItem("theme", "light");
-		}
+		applyTheme(isDark);
+		window.localStorage.setItem("theme", isDark ? "dark" : "light");
 	}, [settings.themeMode]);
 
-	const api = useMemo<SettingsCtx>(
+	const value = useMemo<SettingsCtx>(
 		() => ({
 			settings,
 			setSettings,
+
 			setThemeMode: (mode) =>
 				setSettings((s) => ({
 					...s,
 					themeMode: mode,
 				})),
-			toggleDark: () =>
-				setSettings((s) => ({
-					...s,
-					themeMode: s.themeMode === "dark" ? "light" : "dark",
-				})),
+
 			setLanguage: (language) =>
 				setSettings((s) => ({
 					...s,
 					language,
 				})),
+
+			setTextSize: (size) =>
+				setSettings((s) => ({
+					...s,
+					textSize: size,
+				})),
+
+			toggleVoice: () =>
+				setSettings((s) => ({
+					...s,
+					voiceEnabled: !s.voiceEnabled,
+				})),
+			setVoiceEnabled: (enabled) =>
+				setSettings((s) => ({
+					...s,
+					voiceEnabled: enabled,
+				})),
+
+			toggleOrientation: () =>
+				setSettings((s) => ({
+					...s,
+					orientationEnabled: !s.orientationEnabled,
+				})),
+			setOrientationEnabled: (enabled) =>
+				setSettings((s) => ({
+					...s,
+					orientationEnabled: enabled,
+				})),
 		}),
 		[settings]
 	);
 
-	return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
+	return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

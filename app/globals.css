@@ -1,13 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* 
-  Clean shadcn-style theme:
-  - :root = light mode
-  - .dark = dark mode
-  - Tailwind tokens mapped via @theme inline
-*/
-
 /* LIGHT THEME (default) */
 :root {
 	--background: oklch(1 0 0);
