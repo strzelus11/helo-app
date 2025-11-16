@@ -94,7 +94,7 @@ export default function HomePage() {
 								{tSettings("languageDescription")}
 							</p>
 						</div>
-						<LanguageSwitcher />
+						{isHydrated && <LanguageSwitcher />}
 					</div>
 				</CardContent>
 			</Card>
