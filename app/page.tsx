@@ -24,6 +24,7 @@ import {
 } from "./components/ui/sheet";
 import { Switch } from "./components/ui/switch";
 import { LanguageSwitcher } from "@features/settings/components/LanguageSwitcher";
+import { MapCanvas } from "@features/map/components/MapCanvas";
 
 export default function HomePage() {
 	const tHome = useTranslations("HomePage");
@@ -41,6 +42,7 @@ export default function HomePage() {
 
 	return (
 		<main className="min-h-dvh flex flex-col items-center justify-center gap-6 bg-background text-foreground p-6">
+			<MapCanvas />
 			<h1 className="text-2xl font-semibold tracking-tight text-center">
 				{tHome("title")}
 			</h1>
