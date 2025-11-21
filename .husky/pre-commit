@@ -1,5 +1,2 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-echo "Running typecheck and lint-staged..."
-npm run typecheck && npx lint-staged
+npm run typecheck
+npx lint-staged
