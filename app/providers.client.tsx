@@ -1,8 +1,9 @@
 "use client";
 
 import { SettingsProvider } from "@features/settings/context/SettingsContext";
-import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "@shared/ui/Sonner";
+
+import { ThemeProvider } from "./components/theme-provider";
 
 export function AppClientProviders({
 	children,

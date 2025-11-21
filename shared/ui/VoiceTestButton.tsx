@@ -1,8 +1,8 @@
 "use client";
 
-import { speak } from "@shared/lib/voice/tts";
-import { useSettings } from "@features/settings/context/SettingsContext";
 import { Button } from "@app/components/ui/button";
+import { useSettings } from "@features/settings/context/SettingsContext";
+import { speak } from "@shared/lib/voice/tts";
 
 export function VoiceTestButton() {
 	const { settings } = useSettings();

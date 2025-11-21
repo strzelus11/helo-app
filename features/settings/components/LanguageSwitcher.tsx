@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@app/components/ui/button";
-import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
+
 import { useSettings } from "../context/SettingsContext";
 
 export function LanguageSwitcher() {

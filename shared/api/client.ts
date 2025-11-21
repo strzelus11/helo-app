@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { InvalidDataError, NetworkError } from "@shared/lib/errors";
+import { z } from "zod";
 
 export async function apiFetch<T>(
 	url: string,
@@ -16,11 +16,19 @@ export async function apiFetch<T>(
 			if (!res.ok) throw new NetworkError(`HTTP ${res.status}`);
 			const json = await res.json();
 			return schema.parse(json);
-		} catch (e: any) {
+		} catch (e: unknown) {
 			if (attempt === retries) {
-				if (e?.name === "AbortError") throw new NetworkError("Request timeout");
-				if (e instanceof z.ZodError)
+				// Timeout / abort
+				if (e instanceof DOMException && e.name === "AbortError") {
+					throw new NetworkError("Request timeout");
+				}
+
+				// Zod validation error
+				if (e instanceof z.ZodError) {
 					throw new InvalidDataError(e.message, e.flatten());
+				}
+
+				// Fallback: rethrow whatever error we got
 				throw e;
 			}
 		}

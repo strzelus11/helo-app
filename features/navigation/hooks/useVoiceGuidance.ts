@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import { useSettings } from "@features/settings/context/SettingsContext";
 import { speak, stopSpeaking } from "@shared/lib/voice/tts";
+import { useEffect } from "react";
 
 export type NavigationStep = {
 	id: string;
@@ -31,10 +31,8 @@ export function useVoiceGuidance({
 		const step = steps.find((s) => s.id === activeStepId);
 		if (!step) return;
 
-		// Choose language for TTS from settings
-		const lang = settings.language === "pl" ? "pl-PL" : "en-US";
-
-		speak(step.instruction, lang);
+		// Language is resolved inside the global speak() helper
+		speak(step.instruction);
 
 		return () => {
 			// optional: stop when component unmounts or step changes

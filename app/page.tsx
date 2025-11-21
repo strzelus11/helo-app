@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { MapCanvas } from "@features/map/components/MapCanvas";
+import { LanguageSwitcher } from "@features/settings/components/LanguageSwitcher";
 import { useSettings } from "@features/settings/context/SettingsContext";
+import { VoiceTestButton } from "@shared/ui/VoiceTestButton";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
+import { Button } from "./components/ui/button";
 import {
 	Card,
 	CardHeader,
@@ -12,7 +16,6 @@ import {
 	CardContent,
 	CardFooter,
 } from "./components/ui/card";
-import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import {
@@ -23,9 +26,7 @@ import {
 	SheetDescription,
 } from "./components/ui/sheet";
 import { Switch } from "./components/ui/switch";
-import { LanguageSwitcher } from "@features/settings/components/LanguageSwitcher";
-import { MapCanvas } from "@features/map/components/MapCanvas";
-import { VoiceTestButton } from "@shared/ui/VoiceTestButton";
+
 
 export default function HomePage() {
 	const tHome = useTranslations("HomePage");
