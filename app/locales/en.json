@@ -17,7 +17,10 @@
 		"dark": "Dark",
 		"darkMode": "Dark mode",
 		"languageLabel": "Language",
-		"languageDescription": "Choose interface language."
+		"languageDescription": "Choose interface language.",
+		"voiceLabel": "Voice guidance",
+		"voiceDescription": "Let HELO™ provide spoken navigation.",
+		"testVoice": "Test voice"
 	},
 	"Auth": {
 		"title": "Login to your account",

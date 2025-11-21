@@ -25,7 +25,7 @@ export function MapCanvas() {
 			maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
 		}
 
-		const url = `${window.location.origin}/pmtiles/MTP.pmtiles`;
+		const url = `${window.location.origin}/pmtiles/MTP 2.pmtiles`;
 		const pm = new PMTiles(url);
 		pmtilesProtocol.add(pm);
 

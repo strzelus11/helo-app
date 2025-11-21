@@ -17,7 +17,10 @@
 		"dark": "Ciemny",
 		"darkMode": "Tryb ciemny",
 		"languageLabel": "Język",
-		"languageDescription": "Wybierz język interfejsu."
+		"languageDescription": "Wybierz język interfejsu.",
+		"voiceLabel": "Wskazówki głosowe",
+		"voiceDescription": "Pozwól aplikacji HELO™ mówić podczas nawigacji.",
+		"testVoice": "Testuj głos"
 	},
 	"Auth": {
 		"title": "Zaloguj się do swojego konta",

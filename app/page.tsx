@@ -25,13 +25,14 @@ import {
 import { Switch } from "./components/ui/switch";
 import { LanguageSwitcher } from "@features/settings/components/LanguageSwitcher";
 import { MapCanvas } from "@features/map/components/MapCanvas";
+import { VoiceTestButton } from "@shared/ui/VoiceTestButton";
 
 export default function HomePage() {
 	const tHome = useTranslations("HomePage");
 	const tSettings = useTranslations("Settings");
 	const tAuth = useTranslations("Auth");
 
-	const { settings, setThemeMode } = useSettings();
+	const { settings, setThemeMode, setVoiceEnabled } = useSettings();
 
 	const [sheetOpen, setSheetOpen] = useState(false);
 	const [isHydrated, setIsHydrated] = useState(false);
@@ -87,7 +88,7 @@ export default function HomePage() {
 					</div>
 
 					{/* Language switcher */}
-					<div className="flex items-center justify-between gap-4 pt-2 border-t border-border">
+					<div className="flex items-center justify-between gap-4">
 						<div className="space-y-1">
 							<p className="text-sm font-medium leading-none">
 								{tSettings("languageLabel")}
@@ -97,6 +98,28 @@ export default function HomePage() {
 							</p>
 						</div>
 						{isHydrated && <LanguageSwitcher />}
+					</div>
+
+					<div className="flex flex-col gap-4">
+						<div className="flex items-center justify-between gap-4">
+							<div className="space-y-1">
+								<p className="text-sm font-medium leading-none">
+									{tSettings("voiceLabel")}
+								</p>
+								<p className="text-xs text-muted-foreground">
+									{tSettings("voiceDescription")}
+								</p>
+							</div>
+							{isHydrated && (
+								<Switch
+									checked={settings.voiceEnabled}
+									onCheckedChange={(checked) => setVoiceEnabled(checked)}
+									aria-label="Toggle voice guidance"
+								/>
+							)}
+						</div>
+
+						<VoiceTestButton />
 					</div>
 				</CardContent>
 			</Card>
