@@ -1,34 +1,34 @@
 {
-	"HomePage": {
-		"title": "Welcome to HELO™",
-		"subtitle": "Hospital navigation tailored to your location.",
-		"sheetTitle": "Demo sheet",
-		"sheetDescription": "This sheet will later become the navigation overlay.",
-		"sheetConfirm": "Confirm",
-		"sheetClose": "Close",
-		"openSheet": "Open sheet"
-	},
-	"Settings": {
-		"title": "Settings",
-		"description": "Personalize theme and language for HELO™.",
-		"themeLabel": "Theme",
-		"themeDescription": "Switch between light and dark appearance.",
-		"light": "Light",
-		"dark": "Dark",
-		"darkMode": "Dark mode",
-		"languageLabel": "Language",
-		"languageDescription": "Choose interface language.",
-		"voiceLabel": "Voice guidance",
-		"voiceDescription": "Let HELO™ provide spoken navigation.",
-		"testVoice": "Test voice"
-	},
-	"Auth": {
-		"title": "Login to your account",
-		"description": "Enter your email below to login.",
-		"email": "Email",
-		"password": "Password",
-		"forgotPassword": "Forgot your password?",
-		"login": "Login",
-		"loginWithGoogle": "Login with Google"
-	}
+  "HomePage": {
+    "title": "Welcome to HELO™",
+    "subtitle": "Hospital navigation tailored to your location.",
+    "sheetTitle": "Demo sheet",
+    "sheetDescription": "This sheet will later become the navigation overlay.",
+    "sheetConfirm": "Confirm",
+    "sheetClose": "Close",
+    "openSheet": "Open sheet"
+  },
+  "Settings": {
+    "title": "Settings",
+    "description": "Personalize theme and language for HELO™.",
+    "themeLabel": "Theme",
+    "themeDescription": "Switch between light and dark appearance.",
+    "light": "Light",
+    "dark": "Dark",
+    "darkMode": "Dark mode",
+    "languageLabel": "Language",
+    "languageDescription": "Choose interface language.",
+    "voiceLabel": "Voice guidance",
+    "voiceDescription": "Let HELO™ provide spoken navigation.",
+    "testVoice": "Test voice"
+  },
+  "Auth": {
+    "title": "Login to your account",
+    "description": "Enter your email below to login.",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot your password?",
+    "login": "Login",
+    "loginWithGoogle": "Login with Google"
+  }
 }

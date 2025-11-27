@@ -6,23 +6,23 @@ import { getLocale, getMessages } from "next-intl/server";
 import { AppClientProviders } from "./providers.client";
 
 export const metadata: Metadata = {
-	title: "HELO™",
+  title: "HELO™",
 };
 
 type Props = {
-	children: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export default async function RootLayout({ children }: Props) {
-	const locale = await getLocale();
-	const messages = await getMessages();
+  const locale = await getLocale();
+  const messages = await getMessages();
 
-	return (
-		<html lang={locale} suppressHydrationWarning>
-			<head>
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `
+  return (
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
               (() => {
                 try {
                   const root = document.documentElement;
@@ -41,17 +41,17 @@ export default async function RootLayout({ children }: Props) {
                 } catch {}
               })();
             `,
-					}}
-				/>
-			</head>
-			<body
-				className="min-h-dvh bg-background text-foreground"
-				suppressHydrationWarning
-			>
-				<NextIntlClientProvider locale={locale} messages={messages}>
-					<AppClientProviders>{children}</AppClientProviders>
-				</NextIntlClientProvider>
-			</body>
-		</html>
-	);
+          }}
+        />
+      </head>
+      <body
+        className="min-h-dvh bg-background text-foreground"
+        suppressHydrationWarning
+      >
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <AppClientProviders>{children}</AppClientProviders>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
 }

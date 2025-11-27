@@ -1,34 +1,34 @@
 {
-	"HomePage": {
-		"title": "Witamy w HELO™",
-		"subtitle": "Nawigacja szpitalna dopasowana do Twojej lokalizacji.",
-		"sheetTitle": "Przykładowy panel",
-		"sheetDescription": "Ten panel w przyszłości stanie się nakładką nawigacji.",
-		"sheetConfirm": "Potwierdź",
-		"sheetClose": "Zamknij",
-		"openSheet": "Otwórz panel"
-	},
-	"Settings": {
-		"title": "Ustawienia",
-		"description": "Dostosuj motyw i język w HELO™.",
-		"themeLabel": "Motyw",
-		"themeDescription": "Przełączaj pomiędzy jasnym i ciemnym wyglądem.",
-		"light": "Jasny",
-		"dark": "Ciemny",
-		"darkMode": "Tryb ciemny",
-		"languageLabel": "Język",
-		"languageDescription": "Wybierz język interfejsu.",
-		"voiceLabel": "Wskazówki głosowe",
-		"voiceDescription": "Pozwól aplikacji HELO™ mówić podczas nawigacji.",
-		"testVoice": "Testuj głos"
-	},
-	"Auth": {
-		"title": "Zaloguj się do swojego konta",
-		"description": "Wprowadź swój adres e-mail, aby się zalogować.",
-		"email": "E-mail",
-		"password": "Hasło",
-		"forgotPassword": "Zapomniałeś hasła?",
-		"login": "Zaloguj się",
-		"loginWithGoogle": "Zaloguj się przez Google"
-	}
+  "HomePage": {
+    "title": "Witamy w HELO™",
+    "subtitle": "Nawigacja szpitalna dopasowana do Twojej lokalizacji.",
+    "sheetTitle": "Przykładowy panel",
+    "sheetDescription": "Ten panel w przyszłości stanie się nakładką nawigacji.",
+    "sheetConfirm": "Potwierdź",
+    "sheetClose": "Zamknij",
+    "openSheet": "Otwórz panel"
+  },
+  "Settings": {
+    "title": "Ustawienia",
+    "description": "Dostosuj motyw i język w HELO™.",
+    "themeLabel": "Motyw",
+    "themeDescription": "Przełączaj pomiędzy jasnym i ciemnym wyglądem.",
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "darkMode": "Tryb ciemny",
+    "languageLabel": "Język",
+    "languageDescription": "Wybierz język interfejsu.",
+    "voiceLabel": "Wskazówki głosowe",
+    "voiceDescription": "Pozwól aplikacji HELO™ mówić podczas nawigacji.",
+    "testVoice": "Testuj głos"
+  },
+  "Auth": {
+    "title": "Zaloguj się do swojego konta",
+    "description": "Wprowadź swój adres e-mail, aby się zalogować.",
+    "email": "E-mail",
+    "password": "Hasło",
+    "forgotPassword": "Zapomniałeś hasła?",
+    "login": "Zaloguj się",
+    "loginWithGoogle": "Zaloguj się przez Google"
+  }
 }
