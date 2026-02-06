@@ -1,19 +1,44 @@
 "use client";
 
-import { useMapInstance } from "@features/map/context/MapContext";
-import maplibregl, { Map } from "maplibre-gl";
-import { PMTiles, Protocol } from "pmtiles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import "maplibre-gl/dist/maplibre-gl.css";
+
 import { Skeleton } from "@app/components/ui/skeleton";
+import { useMapInstance } from "@features/map/context/MapContext";
+import { MapSelection } from "@features/map/types/mapLayers.types";
+import { attachMapInteractions } from "@features/map/utils/mapInteractions";
+import { addBaseLayers } from "@features/map/utils/mapLayers.adders";
+import { setMapScope } from "@features/map/utils/mapScope";
+import { createBaseStyle } from "@features/map/utils/mapStyle";
+import maplibregl, { Map } from "maplibre-gl";
+import { PMTiles, Protocol } from "pmtiles";
 
 let pmtilesProtocol: Protocol | null = null;
+
+type MapScope = {
+  buildingId?: string;
+  level?: number;
+};
 
 export function MapCanvas() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
+  const interactionsRef = useRef<ReturnType<
+    typeof attachMapInteractions
+  > | null>(null);
+
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // ✅ This is the “scope” you’ll later control from UI (chips / floor picker)
+  // For now leave undefined to show everything, or set defaults like:
+  // { buildingId: "P_3a", level: 3 }
+  const [scope, setScope] = useState<MapScope>({});
+  const scopeRef = useRef<MapScope>(scope);
+  useEffect(() => {
+    scopeRef.current = scope;
+  }, [scope]);
+
   const { setMap, setInitialBounds } = useMapInstance();
 
   useEffect(() => {
@@ -29,8 +54,8 @@ export function MapCanvas() {
       maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
     }
 
-    const url = `${window.location.origin}/pmtiles/MTP 2.pmtiles`;
-    const pm = new PMTiles(url);
+    const httpUrl = `${window.location.origin}/pmtiles/mtp.pmtiles`;
+    const pm = new PMTiles(httpUrl);
     pmtilesProtocol.add(pm);
 
     pm.getHeader()
@@ -41,45 +66,42 @@ export function MapCanvas() {
           [header.minLon, header.minLat],
           [header.maxLon, header.maxLat],
         ];
+
         setInitialBounds(initialBounds);
 
         const map = new maplibregl.Map({
           container,
           center: [header.centerLon ?? 0, header.centerLat ?? 0],
           zoom: 5,
-          style: {
-            version: 8,
-            sources: {
-              hospital: {
-                type: "vector",
-                url: `pmtiles://${url}`,
-              },
-            },
-            layers: [
-              {
-                id: "hospital-lines",
-                type: "line",
-                source: "hospital",
-                "source-layer": "entities",
-                paint: {
-                  "line-color": "#6b7280", // muted gray, works in light & dark
-                  "line-width": 1.5,
-                },
-              },
-            ],
-          },
+          style: createBaseStyle(httpUrl),
         });
 
+        mapRef.current = map;
         setMap(map);
 
-        mapRef.current = map;
-
         map.on("load", () => {
+          if (cancelled) return;
+
           map.fitBounds(initialBounds, {
             padding: 20,
             animate: true,
             duration: 700,
           });
+
+          // 1) Add layers (with optional building/level scope)
+          addBaseLayers(map, scopeRef.current);
+
+          // 2) Attach interactions (tap → select + optional zoom)
+          interactionsRef.current = attachMapInteractions(map, {
+            zoomOnSelect: true,
+            onSelect: (sel: MapSelection) => {
+              // TODO: connect to your UI (bottom sheet / search selection / route)
+              // sel.kind: "booth" | "room" | "poi" | "road"
+              // sel.id/name/type/building/level best-effort
+              console.log("Selected:", sel.kind, sel.id, sel.name, sel);
+            },
+          });
+
           setIsLoaded(true);
         });
       })
@@ -88,9 +110,14 @@ export function MapCanvas() {
       });
 
     return () => {
-      setIsLoaded(false);
-      setMap(null);
       cancelled = true;
+      setIsLoaded(false);
+
+      // Cleanup interactions first (removes listeners)
+      interactionsRef.current?.destroy();
+      interactionsRef.current = null;
+
+      setMap(null);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -98,12 +125,32 @@ export function MapCanvas() {
     };
   }, [setMap, setInitialBounds]);
 
+  // When scope changes (building / level), just update filters (no rebuild)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (!isLoaded) return;
+    setMapScope(map, scope);
+  }, [scope, isLoaded]);
+
+  // Placeholder: example of changing scope later from UI.
+  // You can remove this block; it’s here just to show usage.
+
+  const debugSetScope = useMemo(
+    () => ({
+      showAll: () => setScope({}),
+      p3a3: () => setScope({ buildingId: "P_3a", level: 3 }),
+      p33: () => setScope({ buildingId: "P_3", level: 3 }),
+    }),
+    [],
+  );
+
   return (
     <div className="relative h-dvh w-dvw overflow-hidden">
       <div ref={containerRef} className="h-full w-full" />
       {!isLoaded && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background">
-          <Skeleton className="w-[90vw] h-[90vw] rounded-md" />
+          <Skeleton className="h-[90vw] w-[90vw] rounded-md" />
         </div>
       )}
     </div>
