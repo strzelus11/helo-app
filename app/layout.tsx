@@ -1,9 +1,13 @@
 import "@app/globals.css";
+import { cn } from "@app/lib/utils";
 import type { Metadata } from "next";
+import { Geist } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
 import { AppClientProviders } from "./providers.client";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "HELO™",
@@ -18,7 +22,11 @@ export default async function RootLayout({ children }: Props) {
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={cn("font-sans", geist.variable)}
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{
