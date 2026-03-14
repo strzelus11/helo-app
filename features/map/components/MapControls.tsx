@@ -2,7 +2,7 @@
 
 import { useMapInstance } from "@features/map/context/MapContext";
 import { FloatingIconButton } from "@shared/ui/FloatingIconButton";
-import { Plus, Minus, LocateFixed, Compass } from "lucide-react";
+import { Plus, Minus, LocateFixed } from "lucide-react";
 
 export function MapControls() {
   const { map, initialBounds, userLocation } = useMapInstance();
@@ -64,12 +64,12 @@ export function MapControls() {
       />
 
       {/* Recenter to user */}
-      <FloatingIconButton
-        icon={<Compass className="h-4 w-4" />}
-        className="pointer-events-auto"
-        onClick={handleRecenterUser}
-        aria-label="Recenter user"
-      />
+      {/* <FloatingIconButton
+				icon={<Compass className="h-4 w-4" />}
+				className="pointer-events-auto"
+				onClick={handleRecenterUser}
+				aria-label="Recenter user"
+			/> */}
     </div>
   );
 }

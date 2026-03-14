@@ -26,19 +26,6 @@ function lineWidthByZoom(
     : (["interpolate", ["linear"], ["zoom"], z0, w0, z1, w1] as const);
 }
 
-function opacityByZoom(
-  z0: number,
-  o0: number,
-  z1: number,
-  o1: number,
-  z2?: number,
-  o2?: number,
-) {
-  return z2 !== undefined && o2 !== undefined
-    ? (["interpolate", ["linear"], ["zoom"], z0, o0, z1, o1, z2, o2] as const)
-    : (["interpolate", ["linear"], ["zoom"], z0, o0, z1, o1] as const);
-}
-
 // --- Layer adders ------------------------------------------------------------
 function addLineLayer(
   map: Map,
@@ -76,77 +63,106 @@ function addFillLayer(
   });
 }
 
-/** Hall outlines (strokes around each pavilion). */
-export function addOutlineLayers(map: Map, opts?: { buildingId?: string }) {
-  addLineLayer(map, LAYER_IDS.OUTLINES, outlineFilter(opts?.buildingId), {
+function addAreaLayers(
+  map: Map,
+  opts: {
+    fillId: string;
+    strokeId: string;
+    filter: any;
+    fillColor: string;
+    fillOpacity: number;
+    strokeColor: string;
+    strokeWidth: unknown;
+    strokeOpacity?: number;
+    minzoom?: number;
+  },
+) {
+  addFillLayer(
+    map,
+    opts.fillId,
+    polygonOnly(opts.filter),
+    {
+      "fill-color": opts.fillColor,
+      "fill-opacity": opts.fillOpacity,
+    },
+    opts.minzoom,
+  );
+
+  addLineLayer(
+    map,
+    opts.strokeId,
+    opts.filter,
+    {
+      "line-color": opts.strokeColor,
+      "line-width": opts.strokeWidth,
+      "line-opacity": opts.strokeOpacity ?? 1,
+    },
+    opts.minzoom,
+  );
+}
+
+/** Hall outlines (single stable layer). */
+export function addOutlineLayers(map: Map) {
+  addLineLayer(map, LAYER_IDS.OUTLINES, outlineFilter(undefined), {
     "line-color": COLOR.outline,
-    "line-width": lineWidthByZoom(3, 0.6, 10, 1.6, 16, 3.0),
-    "line-opacity": opacityByZoom(2, 0.35, 10, 0.9, 16, 1.0),
+    "line-width": lineWidthByZoom(3, 0.14, 10, 0.7, 16, 2.0),
+    "line-opacity": 1,
   });
+}
+
+/** Invisible fill layer used only for clicking whole halls in overview. */
+export function addHallsHitLayer(map: Map) {
+  addFillLayer(
+    map,
+    LAYER_IDS.HALLS_HIT,
+    polygonOnly(outlineFilter(undefined)),
+    {
+      "fill-color": "#000000",
+      "fill-opacity": 0,
+    },
+  );
 }
 
 /** Rooms (fills + strokes). */
 export function addRoomLayers(
   map: Map,
-  opts?: { buildingId?: string; level?: number },
+  opts?: { buildingId?: string; level?: number | string },
 ) {
-  addFillLayer(
-    map,
-    LAYER_IDS.ROOMS_FILL,
-    polygonOnly(roomFilter(opts?.buildingId, opts?.level)),
-    {
-      "fill-color": COLOR.roomFill,
-      "fill-opacity": opacityByZoom(10, 0.0, 12, 0.1, 16, 0.18),
-    },
-    12,
-  );
-
-  addLineLayer(
-    map,
-    LAYER_IDS.ROOMS,
-    roomFilter(opts?.buildingId, opts?.level),
-    {
-      "line-color": COLOR.roomStroke,
-      "line-width": lineWidthByZoom(10, 0.2, 12, 0.8, 16, 1.6),
-      "line-opacity": opacityByZoom(10, 0.0, 12, 0.7, 16, 1.0),
-    },
-    12,
-  );
+  addAreaLayers(map, {
+    fillId: LAYER_IDS.ROOMS_FILL,
+    strokeId: LAYER_IDS.ROOMS,
+    filter: roomFilter(opts?.buildingId, opts?.level),
+    fillColor: COLOR.roomFill,
+    fillOpacity: 0.92,
+    strokeColor: COLOR.roomStroke,
+    strokeWidth: lineWidthByZoom(8, 0.06, 12, 0.32, 16, 1.0),
+    strokeOpacity: 1,
+    minzoom: 15,
+  });
 }
 
 /** Booths (expo stands) – fills + strokes. */
 export function addBoothLayers(
   map: Map,
-  opts?: { buildingId?: string; level?: number },
+  opts?: { buildingId?: string; level?: number | string },
 ) {
-  addFillLayer(
-    map,
-    LAYER_IDS.BOOTHS_FILL,
-    polygonOnly(boothFilter(opts?.buildingId, opts?.level)),
-    {
-      "fill-color": COLOR.boothFill,
-      "fill-opacity": opacityByZoom(11, 0.0, 13, 0.12, 16, 0.2),
-    },
-    13,
-  );
-
-  addLineLayer(
-    map,
-    LAYER_IDS.BOOTHS,
-    boothFilter(opts?.buildingId, opts?.level),
-    {
-      "line-color": COLOR.boothStroke,
-      "line-width": lineWidthByZoom(11, 0.15, 13, 0.7, 16, 1.4),
-      "line-opacity": opacityByZoom(11, 0.0, 13, 0.75, 16, 1.0),
-    },
-    13,
-  );
+  addAreaLayers(map, {
+    fillId: LAYER_IDS.BOOTHS_FILL,
+    strokeId: LAYER_IDS.BOOTHS,
+    filter: boothFilter(opts?.buildingId, opts?.level),
+    fillColor: COLOR.boothFill,
+    fillOpacity: 0.96,
+    strokeColor: COLOR.boothStroke,
+    strokeWidth: lineWidthByZoom(8, 0.05, 13, 0.3, 16, 0.9),
+    strokeOpacity: 1,
+    minzoom: 15,
+  });
 }
 
 /** Paths / walkable graph. */
 export function addPathLayers(
   map: Map,
-  opts?: { buildingId?: string; level?: number },
+  opts?: { buildingId?: string; level?: number | string },
 ) {
   addLineLayer(
     map,
@@ -154,52 +170,53 @@ export function addPathLayers(
     roadFilter(opts?.buildingId, opts?.level),
     {
       "line-color": COLOR.road,
-      "line-width": lineWidthByZoom(8, 0.15, 11, 0.8, 16, 1.5),
-      "line-opacity": opacityByZoom(8, 0.0, 11, 0.55, 16, 1.0),
+      "line-width": lineWidthByZoom(7, 0.03, 11, 0.26, 16, 0.8),
+      "line-opacity": 0.9,
     },
-    11,
+    13,
   );
 }
 
-/** POIs / category-highlighted lines (for now toilets + gastro). */
+/** POIs / category-highlighted areas (toilets + gastro). */
 export function addPoiLayers(
   map: Map,
-  opts?: { buildingId?: string; level?: number },
+  opts?: { buildingId?: string; level?: number | string },
 ) {
-  addLineLayer(
-    map,
-    LAYER_IDS.TOILETS,
-    toiletsFilter(opts?.buildingId, opts?.level),
-    {
-      "line-color": COLOR.toilet,
-      "line-width": lineWidthByZoom(12, 0.2, 14, 1.2, 16, 2.2),
-      "line-opacity": opacityByZoom(12, 0.0, 14, 0.85, 16, 1.0),
-    },
-    14,
-  );
+  addAreaLayers(map, {
+    fillId: LAYER_IDS.TOILETS_FILL,
+    strokeId: LAYER_IDS.TOILETS,
+    filter: toiletsFilter(opts?.buildingId, opts?.level),
+    fillColor: COLOR.toiletFill,
+    fillOpacity: 0.94,
+    strokeColor: COLOR.toiletStroke,
+    strokeWidth: lineWidthByZoom(12, 0.16, 14, 0.6, 16, 1.2),
+    strokeOpacity: 1,
+    minzoom: 16,
+  });
 
-  addLineLayer(
-    map,
-    LAYER_IDS.GASTRO,
-    gastroFilter(opts?.buildingId, opts?.level),
-    {
-      "line-color": COLOR.gastro,
-      "line-width": lineWidthByZoom(12, 0.2, 14, 1.2, 16, 2.2),
-      "line-opacity": opacityByZoom(12, 0.0, 14, 0.85, 16, 1.0),
-    },
-    14,
-  );
+  addAreaLayers(map, {
+    fillId: LAYER_IDS.GASTRO_FILL,
+    strokeId: LAYER_IDS.GASTRO,
+    filter: gastroFilter(opts?.buildingId, opts?.level),
+    fillColor: COLOR.gastroFill,
+    fillOpacity: 0.94,
+    strokeColor: COLOR.gastroStroke,
+    strokeWidth: lineWidthByZoom(12, 0.16, 14, 0.6, 16, 1.2),
+    strokeOpacity: 1,
+    minzoom: 16,
+  });
 }
 
 /** Convenience: add all base layers in the correct z-order. */
 export function addBaseLayers(
   map: Map,
-  opts?: { buildingId?: string; level?: number },
+  opts?: { buildingId?: string; level?: number | string },
 ) {
   // Order matters: earlier = below, later = on top.
   addRoomLayers(map, opts);
   addBoothLayers(map, opts);
-  addOutlineLayers(map, opts);
+  addOutlineLayers(map);
+  addHallsHitLayer(map);
   addPathLayers(map, opts);
   addPoiLayers(map, opts);
 }

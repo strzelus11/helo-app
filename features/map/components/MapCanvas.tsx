@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -18,7 +18,7 @@ let pmtilesProtocol: Protocol | null = null;
 
 type MapScope = {
   buildingId?: string;
-  level?: number;
+  level?: number | string;
 };
 
 export function MapCanvas() {
@@ -27,6 +27,9 @@ export function MapCanvas() {
   const interactionsRef = useRef<ReturnType<
     typeof attachMapInteractions
   > | null>(null);
+
+  const pendingSelectionRef = useRef<MapSelection | null>(null);
+  const selectionFlushRef = useRef<number | null>(null);
 
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -38,6 +41,24 @@ export function MapCanvas() {
   useEffect(() => {
     scopeRef.current = scope;
   }, [scope]);
+
+  const handleSelection = useCallback((sel: MapSelection) => {
+    if (!pendingSelectionRef.current) {
+      pendingSelectionRef.current = sel;
+    }
+
+    if (selectionFlushRef.current != null) return;
+
+    selectionFlushRef.current = window.requestAnimationFrame(() => {
+      const resolved = pendingSelectionRef.current;
+      pendingSelectionRef.current = null;
+      selectionFlushRef.current = null;
+
+      if (!resolved) return;
+
+      console.log("Selected:", resolved.name, resolved);
+    });
+  }, []);
 
   const { setMap, setInitialBounds } = useMapInstance();
 
@@ -94,12 +115,7 @@ export function MapCanvas() {
           // 2) Attach interactions (tap → select + optional zoom)
           interactionsRef.current = attachMapInteractions(map, {
             zoomOnSelect: true,
-            onSelect: (sel: MapSelection) => {
-              // TODO: connect to your UI (bottom sheet / search selection / route)
-              // sel.kind: "booth" | "room" | "poi" | "road"
-              // sel.id/name/type/building/level best-effort
-              console.log("Selected:", sel.kind, sel.id, sel.name, sel);
-            },
+            onSelect: handleSelection,
           });
 
           setIsLoaded(true);
@@ -117,13 +133,19 @@ export function MapCanvas() {
       interactionsRef.current?.destroy();
       interactionsRef.current = null;
 
+      if (selectionFlushRef.current != null) {
+        window.cancelAnimationFrame(selectionFlushRef.current);
+        selectionFlushRef.current = null;
+      }
+      pendingSelectionRef.current = null;
+
       setMap(null);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, [setMap, setInitialBounds]);
+  }, [setMap, setInitialBounds, handleSelection]);
 
   // When scope changes (building / level), just update filters (no rebuild)
   useEffect(() => {

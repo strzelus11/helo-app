@@ -36,8 +36,15 @@ function normalizeSelection(feature: MapGeoJSONFeature): MapSelection {
       kind = "booth";
     else if (lid === LAYER_IDS.ROOMS || lid === LAYER_IDS.ROOMS_FILL)
       kind = "room";
-    else if (lid === LAYER_IDS.TOILETS || lid === LAYER_IDS.GASTRO)
+    else if (
+      lid === LAYER_IDS.TOILETS ||
+      lid === LAYER_IDS.TOILETS_FILL ||
+      lid === LAYER_IDS.GASTRO ||
+      lid === LAYER_IDS.GASTRO_FILL
+    )
       kind = "poi";
+    else if (lid === LAYER_IDS.OUTLINES || lid === LAYER_IDS.HALLS_HIT)
+      kind = "room";
     else if (lid === LAYER_IDS.ROADS) kind = "road";
   }
 
@@ -47,7 +54,8 @@ function normalizeSelection(feature: MapGeoJSONFeature): MapSelection {
     id:
       (p[PROP.ROOM_ID] as string | number | undefined) ??
       (p[PROP.ID] as string | number | undefined) ??
-      (p[PROP.OBJECT_ID] as string | number | undefined),
+      (p[PROP.OBJECT_ID] as string | number | undefined) ??
+      (p[PROP.BUILDING] as string | number | undefined),
     name: (p[PROP.NAME] as string | undefined) ?? undefined,
     type: (p[PROP.TYPE] as string | undefined) ?? undefined,
     building: (p[PROP.BUILDING] as string | undefined) ?? undefined,
@@ -60,11 +68,82 @@ export function getInteractiveLayerIds() {
   // Use fill layers for easier click areas.
   return [
     LAYER_IDS.BOOTHS_FILL,
+    LAYER_IDS.TOILETS_FILL,
+    LAYER_IDS.GASTRO_FILL,
     LAYER_IDS.ROOMS_FILL,
-    LAYER_IDS.TOILETS,
-    LAYER_IDS.GASTRO,
     LAYER_IDS.ROADS,
+    LAYER_IDS.HALLS_HIT,
+    LAYER_IDS.OUTLINES,
   ] as const;
+}
+
+function layerPriority(layerId?: string) {
+  switch (layerId) {
+    case LAYER_IDS.BOOTHS_FILL:
+      return 500;
+    case LAYER_IDS.TOILETS_FILL:
+      return 420;
+    case LAYER_IDS.GASTRO_FILL:
+      return 410;
+    case LAYER_IDS.ROOMS_FILL:
+      return 300;
+    case LAYER_IDS.ROADS:
+      return 100;
+    case LAYER_IDS.HALLS_HIT:
+      return 90;
+    case LAYER_IDS.OUTLINES:
+      return 80;
+    default:
+      return 0;
+  }
+}
+
+function featureAreaScore(feature: MapGeoJSONFeature) {
+  const g = feature.geometry as any;
+  if (!g?.coordinates) return Number.POSITIVE_INFINITY;
+
+  const coords: number[][] = [];
+  const pushCoord = (c: any) => {
+    if (Array.isArray(c) && c.length >= 2 && typeof c[0] === "number") {
+      coords.push([c[0], c[1]]);
+    }
+  };
+  const walk = (node: any) => {
+    if (!node) return;
+    if (typeof node[0] === "number") pushCoord(node);
+    else if (Array.isArray(node)) node.forEach(walk);
+  };
+  walk(g.coordinates);
+
+  if (!coords.length) return Number.POSITIVE_INFINITY;
+
+  let minX = coords[0][0];
+  let minY = coords[0][1];
+  let maxX = coords[0][0];
+  let maxY = coords[0][1];
+  for (const [x, y] of coords) {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  }
+
+  return Math.abs(maxX - minX) * Math.abs(maxY - minY);
+}
+
+function pickBestFeature(features: MapGeoJSONFeature[] | undefined) {
+  if (!features?.length) return undefined;
+
+  return [...features].sort((a, b) => {
+    const p = layerPriority(b.layer?.id) - layerPriority(a.layer?.id);
+    if (p !== 0) return p;
+
+    // For overlapping rooms/booths, prefer the smaller footprint.
+    const areaDiff = featureAreaScore(a) - featureAreaScore(b);
+    if (areaDiff !== 0) return areaDiff;
+
+    return 0;
+  })[0];
 }
 
 function ensureInteractionOverlays(map: Map) {
@@ -111,13 +190,15 @@ function makeSelectionFilter(
   const hasIdProp =
     props[PROP.ROOM_ID] != null ||
     props[PROP.ID] != null ||
-    props[PROP.OBJECT_ID] != null;
+    props[PROP.OBJECT_ID] != null ||
+    props[PROP.BUILDING] != null;
   return hasIdProp
     ? ([
         "any",
         ["==", ["get", PROP.ROOM_ID], normalizedId],
         ["==", ["get", PROP.ID], normalizedId],
         ["==", ["get", PROP.OBJECT_ID], normalizedId],
+        ["==", ["get", PROP.BUILDING], normalizedId],
       ] as const)
     : (["==", ["id"], normalizedId] as const);
 }
@@ -141,12 +222,20 @@ export function attachMapInteractions(
     map.setFilter(LAYER_IDS.HOVER_FILL, empty as any);
   }
 
+  function clearSelected() {
+    selectedId = undefined;
+    const empty = makeEmptyFilter();
+    map.setFilter(LAYER_IDS.HOVER_FILL, empty as any);
+    map.setFilter(LAYER_IDS.SELECTED_OUTLINE, empty as any);
+  }
+
   function setHover(feature: MapGeoJSONFeature) {
     const props = (feature.properties ?? {}) as Record<string, unknown>;
     const normalizedId =
       (props[PROP.ROOM_ID] as string | number | undefined) ??
       (props[PROP.ID] as string | number | undefined) ??
       (props[PROP.OBJECT_ID] as string | number | undefined) ??
+      (props[PROP.BUILDING] as string | number | undefined) ??
       null;
     if (normalizedId == null) {
       clearHover();
@@ -162,6 +251,7 @@ export function attachMapInteractions(
       (props[PROP.ROOM_ID] as string | number | undefined) ??
       (props[PROP.ID] as string | number | undefined) ??
       (props[PROP.OBJECT_ID] as string | number | undefined) ??
+      (props[PROP.BUILDING] as string | number | undefined) ??
       (feature.id as any) ??
       null;
 
@@ -212,6 +302,17 @@ export function attachMapInteractions(
       if (y > maxY) maxY = y;
     }
 
+    const dx = Math.abs(maxX - minX);
+    const dy = Math.abs(maxY - minY);
+    if (dx < 0.00001 && dy < 0.00001) {
+      map.easeTo({
+        center: [(minX + maxX) / 2, (minY + maxY) / 2] as LngLatLike,
+        zoom: Math.max(map.getZoom(), 19),
+        duration: 450,
+      });
+      return;
+    }
+
     map.fitBounds(
       [
         [minX, minY],
@@ -222,7 +323,10 @@ export function attachMapInteractions(
   }
 
   function onMove(e: MapLayerMouseEvent) {
-    const f = e.features?.[0];
+    const features = map.queryRenderedFeatures(e.point, {
+      layers: [...getInteractiveLayerIds()],
+    }) as MapGeoJSONFeature[];
+    const f = pickBestFeature(features);
     if (!f) {
       clearHover();
       return;
@@ -235,36 +339,50 @@ export function attachMapInteractions(
   }
 
   function onClick(e: MapLayerMouseEvent) {
-    const f = e.features?.[0];
-    if (!f) return;
-    setSelected(f);
+    const features = map.queryRenderedFeatures(e.point, {
+      layers: [...getInteractiveLayerIds()],
+    }) as MapGeoJSONFeature[];
+    const f = pickBestFeature(features);
+    if (!f) {
+      clearSelected();
+      return;
+    }
+
+    const isHallClick =
+      f.layer?.id === LAYER_IDS.OUTLINES || f.layer?.id === LAYER_IDS.HALLS_HIT;
+
+    if (isHallClick) {
+      clearSelected();
+    } else {
+      setSelected(f);
+    }
+
     const sel = normalizeSelection(f);
     opts.onSelect?.(sel);
-    if (opts.zoomOnSelect && (sel.kind === "booth" || sel.kind === "room")) {
+    if (
+      opts.zoomOnSelect &&
+      (sel.kind === "booth" ||
+        sel.kind === "room" ||
+        sel.kind === "poi" ||
+        f.layer?.id === LAYER_IDS.OUTLINES ||
+        f.layer?.id === LAYER_IDS.HALLS_HIT)
+    ) {
       zoomToFeature(f);
     }
   }
 
-  const interactive = getInteractiveLayerIds();
-  for (const layerId of interactive) {
-    map.on("mousemove", layerId, onMove);
-    map.on("mouseleave", layerId, onLeave);
-    map.on("click", layerId, onClick);
-  }
+  map.on("mousemove", onMove as any);
+  map.on("mouseleave", onLeave as any);
+  map.on("click", onClick as any);
 
   return {
     destroy() {
-      for (const layerId of interactive) {
-        map.off("mousemove", layerId, onMove);
-        map.off("mouseleave", layerId, onLeave);
-        map.off("click", layerId, onClick);
-      }
+      map.off("mousemove", onMove as any);
+      map.off("mouseleave", onLeave as any);
+      map.off("click", onClick as any);
     },
     clearSelection() {
-      selectedId = undefined;
-      const empty = makeEmptyFilter();
-      map.setFilter(LAYER_IDS.HOVER_FILL, empty as any);
-      map.setFilter(LAYER_IDS.SELECTED_OUTLINE, empty as any);
+      clearSelected();
     },
     getSelectedId() {
       return selectedId;
