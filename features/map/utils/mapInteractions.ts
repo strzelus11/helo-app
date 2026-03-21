@@ -204,7 +204,7 @@ function makeSelectionFilter(
 }
 
 export type MapInteractionOptions = {
-  onSelect?: (sel: MapSelection) => void;
+  onSelect?: (sel?: MapSelection) => void;
   zoomOnSelect?: boolean;
   fitPaddingPx?: number;
 };
@@ -345,6 +345,7 @@ export function attachMapInteractions(
     const f = pickBestFeature(features);
     if (!f) {
       clearSelected();
+      opts.onSelect?.(undefined);
       return;
     }
 
@@ -353,21 +354,21 @@ export function attachMapInteractions(
 
     if (isHallClick) {
       clearSelected();
+      opts.onSelect?.(undefined);
+
+      if (opts.zoomOnSelect) {
+        zoomToFeature(f);
+      }
     } else {
       setSelected(f);
-    }
-
-    const sel = normalizeSelection(f);
-    opts.onSelect?.(sel);
-    if (
-      opts.zoomOnSelect &&
-      (sel.kind === "booth" ||
-        sel.kind === "room" ||
-        sel.kind === "poi" ||
-        f.layer?.id === LAYER_IDS.OUTLINES ||
-        f.layer?.id === LAYER_IDS.HALLS_HIT)
-    ) {
-      zoomToFeature(f);
+      const sel = normalizeSelection(f);
+      opts.onSelect?.(sel);
+      if (
+        opts.zoomOnSelect &&
+        (sel.kind === "booth" || sel.kind === "room" || sel.kind === "poi")
+      ) {
+        zoomToFeature(f);
+      }
     }
   }
 

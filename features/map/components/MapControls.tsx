@@ -1,11 +1,11 @@
 "use client";
 
-import { useMapInstance } from "@features/map/context/MapContext";
+import { useMapContext } from "@features/map/context/MapContext";
 import { FloatingIconButton } from "@shared/ui/FloatingIconButton";
 import { Plus, Minus, LocateFixed } from "lucide-react";
 
 export function MapControls() {
-  const { map, initialBounds, userLocation } = useMapInstance();
+  const { map, initialBounds, userLocation } = useMapContext();
 
   const handleZoomIn = () => {
     if (!map) return;

@@ -1,5 +1,7 @@
 "use client";
 
+import { MapProvider } from "@features/map/context/MapContext";
+import { NavigationProvider } from "@features/navigation/context/NavigationContext";
 import { SettingsProvider } from "@features/settings/context/SettingsContext";
 import { Toaster } from "@shared/ui/Sonner";
 
@@ -18,8 +20,12 @@ export function AppClientProviders({
         enableSystem
         disableTransitionOnChange
       >
-        <Toaster />
-        {children}
+        <MapProvider>
+          <NavigationProvider>
+            <Toaster />
+            {children}
+          </NavigationProvider>
+        </MapProvider>
       </ThemeProvider>
     </SettingsProvider>
   );

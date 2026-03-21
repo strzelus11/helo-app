@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Skeleton } from "@app/components/ui/skeleton";
-import { useMapInstance } from "@features/map/context/MapContext";
+import { useMapContext } from "@features/map/context/MapContext";
 import { MapSelection } from "@features/map/types/mapLayers.types";
 import { attachMapInteractions } from "@features/map/utils/mapInteractions";
 import { addBaseLayers } from "@features/map/utils/mapLayers.adders";
@@ -28,9 +28,6 @@ export function MapCanvas() {
     typeof attachMapInteractions
   > | null>(null);
 
-  const pendingSelectionRef = useRef<MapSelection | null>(null);
-  const selectionFlushRef = useRef<number | null>(null);
-
   const [isLoaded, setIsLoaded] = useState(false);
 
   // ✅ This is the “scope” you’ll later control from UI (chips / floor picker)
@@ -42,25 +39,27 @@ export function MapCanvas() {
     scopeRef.current = scope;
   }, [scope]);
 
-  const handleSelection = useCallback((sel: MapSelection) => {
-    if (!pendingSelectionRef.current) {
-      pendingSelectionRef.current = sel;
-    }
+  const { setMap, setInitialBounds, setSelectedFeature } = useMapContext();
 
-    if (selectionFlushRef.current != null) return;
+  const handleSelection = useCallback(
+    (sel?: MapSelection) => {
+      if (!sel) {
+        setSelectedFeature(null);
+        return;
+      }
 
-    selectionFlushRef.current = window.requestAnimationFrame(() => {
-      const resolved = pendingSelectionRef.current;
-      pendingSelectionRef.current = null;
-      selectionFlushRef.current = null;
+      const feature = {
+        id: String(sel.id ?? ""),
+        name: sel.name ?? "Miejsce",
+        type: sel.kind,
+        buildingId: sel.building,
+        floorId: sel.level?.toString(),
+      };
 
-      if (!resolved) return;
-
-      console.log("Selected:", resolved.name, resolved);
-    });
-  }, []);
-
-  const { setMap, setInitialBounds } = useMapInstance();
+      setSelectedFeature(feature);
+    },
+    [setSelectedFeature],
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -132,12 +131,6 @@ export function MapCanvas() {
       // Cleanup interactions first (removes listeners)
       interactionsRef.current?.destroy();
       interactionsRef.current = null;
-
-      if (selectionFlushRef.current != null) {
-        window.cancelAnimationFrame(selectionFlushRef.current);
-        selectionFlushRef.current = null;
-      }
-      pendingSelectionRef.current = null;
 
       setMap(null);
       if (mapRef.current) {
