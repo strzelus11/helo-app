@@ -165,14 +165,37 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    @apply h-full min-h-dvh font-sans;
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+    background: var(--background);
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply h-full min-h-dvh bg-background text-foreground;
     font-family:
       -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
       "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--background);
   }
-  html {
-    @apply font-sans;
+
+  body > div:first-child,
+  #__next {
+    min-height: 100dvh;
+  }
+}
+
+@layer utilities {
+  .app-mobile-shell {
+    min-height: 100dvh;
+    min-height: 100svh;
+    width: 100%;
+    overflow: clip;
+    background: var(--background);
   }
 }
 

@@ -23,10 +23,10 @@ export function NavigationPanelPreviewContent({
 }: NavigationPanelPreviewContentProps) {
   return (
     <div className="flex min-h-0 flex-col gap-[1.6rem] pb-[0.4rem]">
-      <div className="grid grid-cols-[1fr_auto] gap-[1rem]">
+      <div className="grid grid-cols-2 gap-[1rem]">
         <Button
           type="button"
-          className="h-[4.6rem] rounded-[18px] px-[1.6rem] text-[1.4rem] font-semibold"
+          className="h-[3.6rem] rounded-lg px-[1.4rem] text-[1.2rem] font-semibold"
           onClick={onStartNavigation}
         >
           Prowadź tutaj
@@ -35,7 +35,7 @@ export function NavigationPanelPreviewContent({
         <Button
           type="button"
           variant="secondary"
-          className="h-[4.6rem] rounded-[18px] px-[1.4rem] text-[1.35rem] font-medium"
+          className="h-[3.6rem] rounded-lg px-[1.4rem] text-[1.2rem] font-medium"
           onClick={onShowDetails}
         >
           Szczegóły
