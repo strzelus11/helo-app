@@ -1,5 +1,6 @@
 import "@app/globals.css";
 import { cn } from "@app/lib/utils";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
@@ -63,7 +64,10 @@ export default async function RootLayout({ children }: Props) {
         suppressHydrationWarning
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AppClientProviders>{children}</AppClientProviders>
+          <AppClientProviders>
+            {children}
+            <Analytics />
+          </AppClientProviders>
         </NextIntlClientProvider>
       </body>
     </html>
