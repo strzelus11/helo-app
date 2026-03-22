@@ -2,6 +2,7 @@
 
 import { MapProvider } from "@features/map/context/MapContext";
 import { NavigationProvider } from "@features/navigation/context/NavigationContext";
+import { SearchProvider } from "@features/searchbar/context/SearchContext";
 import { SettingsProvider } from "@features/settings/context/SettingsContext";
 import { Toaster } from "@shared/ui/Sonner";
 
@@ -22,8 +23,10 @@ export function AppClientProviders({
       >
         <MapProvider>
           <NavigationProvider>
-            <Toaster />
-            {children}
+            <SearchProvider>
+              <Toaster />
+              {children}
+            </SearchProvider>
           </NavigationProvider>
         </MapProvider>
       </ThemeProvider>

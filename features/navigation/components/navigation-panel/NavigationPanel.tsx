@@ -36,9 +36,8 @@ export function NavigationPanel() {
       isExpanded={state.isExpanded}
       onExpandedChange={state.setExpanded}
       onClose={() => {
-        if (state.isExpanded) {
-          state.setExpanded(false);
-        }
+        state.setExpanded(false);
+        clearRoute();
         setSelectedFeature(null);
       }}
       header={state.header}

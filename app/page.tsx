@@ -1,6 +1,6 @@
 import { MapShell } from "@features/map/components/MapShell";
 import { NavigationPanel } from "@features/navigation/components/navigation-panel/NavigationPanel";
-import { SearchDrawer } from "@features/searchbar/components/SearchDrawer";
+import { SearchBar } from "@features/searchbar/components/SearchBar";
 import { SettingsSheet } from "@features/settings/components/SettingsSheet";
 
 export default function HomePage() {
@@ -8,7 +8,7 @@ export default function HomePage() {
     <main className="relative min-h-dvh bg-background">
       <MapShell />
       <SettingsSheet />
-      <SearchDrawer />
+      <SearchBar />
       <NavigationPanel />
     </main>
   );

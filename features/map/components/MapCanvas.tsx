@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -30,9 +30,6 @@ export function MapCanvas() {
 
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // ✅ This is the “scope” you’ll later control from UI (chips / floor picker)
-  // For now leave undefined to show everything, or set defaults like:
-  // { buildingId: "P_3a", level: 3 }
   const [scope, setScope] = useState<MapScope>({});
   const scopeRef = useRef<MapScope>(scope);
   useEffect(() => {
@@ -68,7 +65,6 @@ export function MapCanvas() {
     let cancelled = false;
     const container = containerRef.current;
 
-    // Register pmtiles protocol once
     if (!pmtilesProtocol) {
       pmtilesProtocol = new Protocol();
       maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
@@ -108,10 +104,8 @@ export function MapCanvas() {
             duration: 700,
           });
 
-          // 1) Add layers (with optional building/level scope)
           addBaseLayers(map, scopeRef.current);
 
-          // 2) Attach interactions (tap → select + optional zoom)
           interactionsRef.current = attachMapInteractions(map, {
             zoomOnSelect: true,
             onSelect: handleSelection,
@@ -128,7 +122,6 @@ export function MapCanvas() {
       cancelled = true;
       setIsLoaded(false);
 
-      // Cleanup interactions first (removes listeners)
       interactionsRef.current?.destroy();
       interactionsRef.current = null;
 
@@ -140,25 +133,12 @@ export function MapCanvas() {
     };
   }, [setMap, setInitialBounds, handleSelection]);
 
-  // When scope changes (building / level), just update filters (no rebuild)
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     if (!isLoaded) return;
     setMapScope(map, scope);
   }, [scope, isLoaded]);
-
-  // Placeholder: example of changing scope later from UI.
-  // You can remove this block; it’s here just to show usage.
-
-  const debugSetScope = useMemo(
-    () => ({
-      showAll: () => setScope({}),
-      p3a3: () => setScope({ buildingId: "P_3a", level: 3 }),
-      p33: () => setScope({ buildingId: "P_3", level: 3 }),
-    }),
-    [],
-  );
 
   return (
     <div className="relative h-dvh w-dvw overflow-hidden">
