@@ -8,7 +8,7 @@ import { type NavigationPanelShellProps } from "../../types/navigation-panel.typ
 import { NavigationPanelHeader } from "./NavigationPanelHeader";
 
 const DEFAULT_COLLAPSED_HEIGHT = 15;
-const DEFAULT_EXPANDED_HEIGHT = 40;
+const DEFAULT_EXPANDED_HEIGHT = 30;
 const DEFAULT_SIDE_OFFSET = 0.8;
 const DEFAULT_BOTTOM_OFFSET = 0.8;
 const DEFAULT_DRAG_EXPAND_THRESHOLD = 6;
