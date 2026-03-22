@@ -31,7 +31,7 @@ export function SearchInput({
           onFocus={onFocus}
           onPointerDown={onInputPointerDown}
           placeholder={placeholder}
-          className="block h-5 w-full border-0 bg-transparent p-0 text-sm leading-5 text-foreground outline-none placeholder:text-muted-foreground"
+          className="block h-5 w-full border-0 bg-transparent p-0 text-normal leading-5 text-foreground outline-none placeholder:text-muted-foreground"
         />
       </div>
 
