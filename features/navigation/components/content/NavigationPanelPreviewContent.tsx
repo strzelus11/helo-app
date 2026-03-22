@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@app/components/ui/button";
+import { ArrowRight, Info } from "lucide-react";
 
 type NavigationPanelPreviewContentProps = {
   poiName?: string;
@@ -8,6 +9,7 @@ type NavigationPanelPreviewContentProps = {
   buildingLabel?: string;
   floorLabel?: string;
   description?: string;
+  isExpanded?: boolean;
   onStartNavigation?: () => void;
   onShowDetails?: () => void;
 };
@@ -18,58 +20,63 @@ export function NavigationPanelPreviewContent({
   buildingLabel = "Pawilon 5",
   floorLabel = "Poziom 0",
   description = "Krótki opis miejsca, wystawcy lub punktu usługowego. Tutaj pokażemy najważniejsze informacje przed rozpoczęciem trasy.",
+  isExpanded,
   onStartNavigation,
   onShowDetails,
 }: NavigationPanelPreviewContentProps) {
   return (
-    <div className="flex min-h-0 flex-col gap-[1.6rem] pb-[0.4rem]">
-      <div className="grid grid-cols-2 gap-[1rem]">
+    <div className="flex min-h-0 flex-col gap-4 pb-1">
+      <div className="grid grid-cols-[1fr_auto] items-start gap-3">
+        <div className="min-w-0 space-y-1.5">
+          <h2 className="text-xl font-semibold leading-tight text-foreground">
+            {poiName}
+          </h2>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {poiTypeLabel}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-2xl bg-muted/70 px-3 py-2.5">
+          <p className="text-xs text-muted-foreground">Budynek</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">
+            {buildingLabel}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-muted/70 px-3 py-2.5">
+          <p className="text-xs text-muted-foreground">Poziom</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">
+            {floorLabel}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
         <Button
           type="button"
-          className="h-[3.6rem] rounded-lg px-[1.4rem] text-[1.2rem] font-semibold"
+          className="h-11 rounded-xl px-4 text-sm font-semibold"
           onClick={onStartNavigation}
         >
-          Prowadź tutaj
+          <ArrowRight className="mr-2 size-4" />
+          Prowadź
         </Button>
 
         <Button
           type="button"
           variant="secondary"
-          className="h-[3.6rem] rounded-lg px-[1.4rem] text-[1.2rem] font-medium"
+          className="h-11 rounded-xl px-4 text-sm font-medium"
           onClick={onShowDetails}
         >
+          <Info className="mr-2 size-4" />
           Szczegóły
         </Button>
       </div>
-      <div className="rounded-[24px] border border-border/70 bg-card/70 p-[1.6rem]">
-        <div className="flex items-start justify-between gap-[1.2rem]">
-          <div className="min-w-0 flex-1">
-            <p className="text-[1.15rem] font-medium uppercase tracking-[0.08em] text-muted-foreground">
-              {poiTypeLabel}
-            </p>
-            <h2 className="mt-[0.6rem] text-[1.9rem] font-semibold leading-[1.2] text-foreground">
-              {poiName}
-            </h2>
-          </div>
 
-          <div className="shrink-0 rounded-full bg-secondary px-[1rem] py-[0.55rem] text-[1.1rem] font-medium leading-none text-secondary-foreground">
-            Cel
-          </div>
-        </div>
-
-        <div className="mt-[1.4rem] flex flex-wrap gap-[0.8rem]">
-          <span className="rounded-full bg-muted px-[1rem] py-[0.65rem] text-[1.2rem] font-medium leading-none text-muted-foreground">
-            {buildingLabel}
-          </span>
-          <span className="rounded-full bg-muted px-[1rem] py-[0.65rem] text-[1.2rem] font-medium leading-none text-muted-foreground">
-            {floorLabel}
-          </span>
-        </div>
-
-        <p className="mt-[1.4rem] text-[1.35rem] leading-[1.45] text-muted-foreground">
-          {description}
-        </p>
-      </div>
+      {isExpanded && (
+        <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+      )}
     </div>
   );
 }

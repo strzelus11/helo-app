@@ -1,6 +1,7 @@
 "use client";
 
 import { type useDragControls } from "framer-motion";
+import { ChevronUp, X } from "lucide-react";
 import { type PointerEvent } from "react";
 
 import { type NavigationPanelHeaderMeta } from "../../types/navigation-panel.types";
@@ -15,7 +16,6 @@ type NavigationPanelHeaderProps = {
 };
 
 export function NavigationPanelHeader({
-  meta,
   isExpanded,
   onToggleExpanded,
   onClose,
@@ -28,60 +28,48 @@ export function NavigationPanelHeader({
 
   return (
     <div
-      className="shrink-0 px-[1.6rem] py-[1.2rem]"
+      className="shrink-0 px-3 pb-2 pt-2 bg-transparent"
       onPointerDown={handlePointerDown}
     >
-      <button
-        type="button"
-        onClick={onToggleExpanded}
-        className="flex w-full flex-col text-left"
-        aria-label={
-          isExpanded ? "Zwiń panel nawigacji" : "Rozwiń panel nawigacji"
-        }
-      >
-        <div className="mx-auto h-[0.5rem] w-[4.2rem] rounded-full bg-black/12 dark:bg-white/20" />
-
-        <div className="flex items-start gap-[1.2rem]">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-[0.8rem]">
-              <p className="truncate text-[1.5rem] font-semibold leading-[1.2] text-foreground">
-                {meta.title}
-              </p>
-              {meta.badge && (
-                <span className="rounded-full bg-secondary px-[0.8rem] py-[0.3rem] text-[1.1rem] font-medium leading-none text-secondary-foreground">
-                  {meta.badge}
-                </span>
-              )}
-            </div>
-
-            {meta.subtitle && (
-              <p className="mt-[0.4rem] line-clamp-2 text-[1.25rem] leading-[1.35] text-muted-foreground">
-                {meta.subtitle}
-              </p>
-            )}
-          </div>
-
-          <div className="flex shrink-0 items-center gap-[0.8rem]">
-            <div className="rounded-full bg-muted px-[0.9rem] py-[0.6rem] text-[1.1rem] font-medium leading-none text-muted-foreground">
-              {isExpanded ? "Podgląd" : "Szczegóły"}
-            </div>
-
-            {showCloseButton && onClose && (
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onClose();
-                }}
-                className="inline-flex h-[3.2rem] w-[3.2rem] items-center justify-center rounded-full bg-muted text-[1.4rem] font-semibold leading-none text-foreground"
-                aria-label="Zamknij panel"
-              >
-                ×
-              </button>
-            )}
-          </div>
+      <div className="relative flex min-h-8 items-center">
+        <div className="pointer-events-none absolute inset-x-0 flex justify-center">
+          <div className="h-1 w-8 rounded-full bg-black/10 backdrop-blur-sm dark:bg-white/15" />
         </div>
-      </button>
+
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleExpanded();
+            }}
+            className="inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground shadow-sm backdrop-blur-md transition-colors hover:bg-background/90 hover:text-foreground"
+            aria-label={
+              isExpanded ? "Zwiń panel nawigacji" : "Rozwiń panel nawigacji"
+            }
+          >
+            <ChevronUp
+              className={`size-4 transition-transform duration-200 ${
+                isExpanded ? "rotate-180" : "rotate-0"
+              }`}
+            />
+          </button>
+
+          {showCloseButton && onClose && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onClose();
+              }}
+              className="inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground shadow-sm backdrop-blur-md transition-colors hover:bg-background/90 hover:text-foreground"
+              aria-label="Zamknij panel"
+            >
+              <X className="size-4" />
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

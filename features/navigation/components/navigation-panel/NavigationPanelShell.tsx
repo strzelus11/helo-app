@@ -8,7 +8,7 @@ import { type NavigationPanelShellProps } from "../../types/navigation-panel.typ
 import { NavigationPanelHeader } from "./NavigationPanelHeader";
 
 const DEFAULT_COLLAPSED_HEIGHT = 15;
-const DEFAULT_EXPANDED_HEIGHT = 46;
+const DEFAULT_EXPANDED_HEIGHT = 40;
 const DEFAULT_SIDE_OFFSET = 0.8;
 const DEFAULT_BOTTOM_OFFSET = 0.8;
 const DEFAULT_DRAG_EXPAND_THRESHOLD = 6;
@@ -113,7 +113,7 @@ export function NavigationPanelShell({
           }}
         >
           <motion.div
-            className="overflow-hidden rounded-[28px] border border-border/60 bg-background/92 shadow-[0_16px_40px_rgba(0,0,0,0.14)] backdrop-blur-xl"
+            className="relative overflow-hidden rounded-[28px] border border-border/60 bg-background/92 shadow-[0_16px_40px_rgba(0,0,0,0.14)] backdrop-blur-xl"
             animate={{ height: panelHeight }}
             transition={{
               height: {
@@ -129,8 +129,13 @@ export function NavigationPanelShell({
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.03}
             onDragEnd={(_, info) => {
-              if (info.offset.y > dragCollapseThreshold && isExpanded) {
-                onExpandedChange(false);
+              if (info.offset.y > dragCollapseThreshold) {
+                if (isExpanded) {
+                  onExpandedChange(false);
+                  return;
+                }
+
+                onClose?.();
                 return;
               }
 
@@ -140,18 +145,20 @@ export function NavigationPanelShell({
             }}
           >
             <div className="flex h-full min-h-0 flex-col">
-              <NavigationPanelHeader
-                meta={header}
-                isExpanded={isExpanded}
-                onToggleExpanded={handleToggleExpanded}
-                onClose={onClose}
-                showCloseButton={showCloseButton}
-                dragControls={dragControls}
-              />
+              <div className="absolute inset-x-0 top-0 z-10">
+                <NavigationPanelHeader
+                  meta={header}
+                  isExpanded={isExpanded}
+                  onToggleExpanded={handleToggleExpanded}
+                  onClose={onClose}
+                  showCloseButton={showCloseButton}
+                  dragControls={dragControls}
+                />
+              </div>
 
               <div
                 className={cn(
-                  "min-h-0 flex-1 overflow-y-auto px-[1rem] pb-[1rem]",
+                  "min-h-0 flex-1 px-4 pb-4 pt-10",
                   contentClassName,
                 )}
               >
