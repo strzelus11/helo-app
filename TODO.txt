@@ -1,0 +1,5 @@
+- na klikniecie searchbar navigation panel znika
+- uzupelnienie searchbar przy wybraniu searchresult/kliknieciu na obiekt
+- naprawic kategorie
+- naprawic ostatnie, nie powinny sie usuwac po refresh (do przemyslenia)
+- pomyslec nad poprawa mapinteractions

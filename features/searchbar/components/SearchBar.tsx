@@ -1,7 +1,6 @@
 "use client";
 
 import { useSearchContext } from "@features/searchbar/context/SearchContext";
-import { useSearchResults } from "@features/searchbar/hooks/useSearchResults";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 
@@ -11,7 +10,6 @@ import { SearchPanel } from "./SearchPanel";
 export function SearchBar() {
   const { query, isOpen, setQuery, openSearch, closeSearch, clearSearch } =
     useSearchContext();
-  useSearchResults();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -48,7 +46,7 @@ export function SearchBar() {
   };
 
   return (
-    <div ref={containerRef} className="absolute inset-x-3 top-3 z-40">
+    <div ref={containerRef} className="absolute inset-x-3 top-3 z-80">
       <div className="overflow-hidden rounded-[22px] border border-border/60 bg-background/92 shadow-[0_10px_28px_rgba(0,0,0,0.12)] backdrop-blur-xl">
         <SearchInput
           value={query}

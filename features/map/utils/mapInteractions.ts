@@ -53,9 +53,8 @@ function normalizeSelection(feature: MapGeoJSONFeature): MapSelection {
     feature,
     id:
       (p[PROP.ROOM_ID] as string | number | undefined) ??
-      (p[PROP.ID] as string | number | undefined) ??
-      (p[PROP.OBJECT_ID] as string | number | undefined) ??
-      (p[PROP.BUILDING] as string | number | undefined),
+      (p[PROP.BUILDING] as string | number | undefined) ??
+      (feature.id as string | number | undefined),
     name: (p[PROP.NAME] as string | undefined) ?? undefined,
     type: (p[PROP.TYPE] as string | undefined) ?? undefined,
     building: (p[PROP.BUILDING] as string | undefined) ?? undefined,
@@ -71,9 +70,7 @@ export function getInteractiveLayerIds() {
     LAYER_IDS.TOILETS_FILL,
     LAYER_IDS.GASTRO_FILL,
     LAYER_IDS.ROOMS_FILL,
-    LAYER_IDS.ROADS,
     LAYER_IDS.HALLS_HIT,
-    LAYER_IDS.OUTLINES,
   ] as const;
 }
 
@@ -187,20 +184,13 @@ function makeSelectionFilter(
   props: Record<string, unknown>,
   normalizedId: any,
 ) {
-  const hasIdProp =
-    props[PROP.ROOM_ID] != null ||
-    props[PROP.ID] != null ||
-    props[PROP.OBJECT_ID] != null ||
-    props[PROP.BUILDING] != null;
-  return hasIdProp
-    ? ([
-        "any",
-        ["==", ["get", PROP.ROOM_ID], normalizedId],
-        ["==", ["get", PROP.ID], normalizedId],
-        ["==", ["get", PROP.OBJECT_ID], normalizedId],
-        ["==", ["get", PROP.BUILDING], normalizedId],
-      ] as const)
-    : (["==", ["id"], normalizedId] as const);
+  const hasRoomId = props[PROP.ROOM_ID] != null;
+  const hasBuilding = props[PROP.BUILDING] != null;
+  return hasRoomId
+    ? (["==", ["get", PROP.ROOM_ID], normalizedId] as const)
+    : hasBuilding
+      ? (["==", ["get", PROP.BUILDING], normalizedId] as const)
+      : (["==", ["id"], normalizedId] as const);
 }
 
 export type MapInteractionOptions = {
@@ -208,6 +198,70 @@ export type MapInteractionOptions = {
   zoomOnSelect?: boolean;
   fitPaddingPx?: number;
 };
+
+export function zoomToFeature(
+  map: Map,
+  feature: MapGeoJSONFeature,
+  padding = 44,
+) {
+  const resolvedPadding = padding;
+  const g = feature.geometry as any;
+  if (!g) return;
+
+  if (g.type === "Point" && Array.isArray(g.coordinates)) {
+    map.easeTo({
+      center: g.coordinates as LngLatLike,
+      zoom: Math.max(map.getZoom(), 19),
+      duration: 450,
+    });
+    return;
+  }
+
+  // Polygon / MultiPolygon / LineString => compute bbox
+  const coords: number[][] = [];
+  const pushCoord = (c: any) => {
+    if (Array.isArray(c) && c.length >= 2 && typeof c[0] === "number") {
+      coords.push([c[0], c[1]]);
+    }
+  };
+  const walk = (node: any) => {
+    if (!node) return;
+    if (typeof node[0] === "number") pushCoord(node);
+    else if (Array.isArray(node)) node.forEach(walk);
+  };
+  walk(g.coordinates);
+
+  if (!coords.length) return;
+  let minX = coords[0][0];
+  let minY = coords[0][1];
+  let maxX = coords[0][0];
+  let maxY = coords[0][1];
+  for (const [x, y] of coords) {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  }
+
+  const dx = Math.abs(maxX - minX);
+  const dy = Math.abs(maxY - minY);
+  if (dx < 0.00001 && dy < 0.00001) {
+    map.easeTo({
+      center: [(minX + maxX) / 2, (minY + maxY) / 2] as LngLatLike,
+      zoom: Math.max(map.getZoom(), 19),
+      duration: 450,
+    });
+    return;
+  }
+
+  map.fitBounds(
+    [
+      [minX, minY],
+      [maxX, maxY],
+    ],
+    { padding: resolvedPadding, duration: 500, maxZoom: 20 },
+  );
+}
 
 export function attachMapInteractions(
   map: Map,
@@ -233,9 +287,8 @@ export function attachMapInteractions(
     const props = (feature.properties ?? {}) as Record<string, unknown>;
     const normalizedId =
       (props[PROP.ROOM_ID] as string | number | undefined) ??
-      (props[PROP.ID] as string | number | undefined) ??
-      (props[PROP.OBJECT_ID] as string | number | undefined) ??
       (props[PROP.BUILDING] as string | number | undefined) ??
+      (feature.id as string | number | undefined) ??
       null;
     if (normalizedId == null) {
       clearHover();
@@ -249,10 +302,8 @@ export function attachMapInteractions(
     const props = (feature.properties ?? {}) as Record<string, unknown>;
     const normalizedId =
       (props[PROP.ROOM_ID] as string | number | undefined) ??
-      (props[PROP.ID] as string | number | undefined) ??
-      (props[PROP.OBJECT_ID] as string | number | undefined) ??
       (props[PROP.BUILDING] as string | number | undefined) ??
-      (feature.id as any) ??
+      (feature.id as string | number | undefined) ??
       null;
 
     selectedId = normalizedId ?? undefined;
@@ -260,66 +311,6 @@ export function attachMapInteractions(
     const filter = makeSelectionFilter(props, normalizedId);
     map.setFilter(LAYER_IDS.HOVER_FILL, filter as any);
     map.setFilter(LAYER_IDS.SELECTED_OUTLINE, filter as any);
-  }
-
-  function zoomToFeature(feature: MapGeoJSONFeature) {
-    const padding = opts.fitPaddingPx ?? 44;
-    const g = feature.geometry as any;
-    if (!g) return;
-
-    if (g.type === "Point" && Array.isArray(g.coordinates)) {
-      map.easeTo({
-        center: g.coordinates as LngLatLike,
-        zoom: Math.max(map.getZoom(), 19),
-        duration: 450,
-      });
-      return;
-    }
-
-    // Polygon / MultiPolygon / LineString => compute bbox
-    const coords: number[][] = [];
-    const pushCoord = (c: any) => {
-      if (Array.isArray(c) && c.length >= 2 && typeof c[0] === "number") {
-        coords.push([c[0], c[1]]);
-      }
-    };
-    const walk = (node: any) => {
-      if (!node) return;
-      if (typeof node[0] === "number") pushCoord(node);
-      else if (Array.isArray(node)) node.forEach(walk);
-    };
-    walk(g.coordinates);
-
-    if (!coords.length) return;
-    let minX = coords[0][0];
-    let minY = coords[0][1];
-    let maxX = coords[0][0];
-    let maxY = coords[0][1];
-    for (const [x, y] of coords) {
-      if (x < minX) minX = x;
-      if (y < minY) minY = y;
-      if (x > maxX) maxX = x;
-      if (y > maxY) maxY = y;
-    }
-
-    const dx = Math.abs(maxX - minX);
-    const dy = Math.abs(maxY - minY);
-    if (dx < 0.00001 && dy < 0.00001) {
-      map.easeTo({
-        center: [(minX + maxX) / 2, (minY + maxY) / 2] as LngLatLike,
-        zoom: Math.max(map.getZoom(), 19),
-        duration: 450,
-      });
-      return;
-    }
-
-    map.fitBounds(
-      [
-        [minX, minY],
-        [maxX, maxY],
-      ],
-      { padding, duration: 500, maxZoom: 20 },
-    );
   }
 
   function onMove(e: MapLayerMouseEvent) {
@@ -343,6 +334,7 @@ export function attachMapInteractions(
       layers: [...getInteractiveLayerIds()],
     }) as MapGeoJSONFeature[];
     const f = pickBestFeature(features);
+
     if (!f) {
       clearSelected();
       opts.onSelect?.(undefined);
@@ -353,12 +345,10 @@ export function attachMapInteractions(
       f.layer?.id === LAYER_IDS.OUTLINES || f.layer?.id === LAYER_IDS.HALLS_HIT;
 
     if (isHallClick) {
-      clearSelected();
-      opts.onSelect?.(undefined);
-
       if (opts.zoomOnSelect) {
-        zoomToFeature(f);
+        zoomToFeature(map, f, opts.fitPaddingPx ?? 44);
       }
+      return;
     } else {
       setSelected(f);
       const sel = normalizeSelection(f);
@@ -367,9 +357,29 @@ export function attachMapInteractions(
         opts.zoomOnSelect &&
         (sel.kind === "booth" || sel.kind === "room" || sel.kind === "poi")
       ) {
-        zoomToFeature(f);
+        zoomToFeature(map, f, opts.fitPaddingPx ?? 44);
       }
     }
+  }
+
+  function selectByRoomId(roomId: string) {
+    const normalized = String(roomId).trim();
+
+    const features = map.queryRenderedFeatures(undefined, {
+      layers: [...getInteractiveLayerIds()],
+    }) as MapGeoJSONFeature[];
+
+    const target = features.find(
+      (f) => String(f.properties?.[PROP.ROOM_ID] ?? "").trim() === normalized,
+    );
+
+    if (!target) return false;
+
+    setSelected(target);
+    const sel = normalizeSelection(target);
+    opts.onSelect?.(sel);
+
+    return true;
   }
 
   map.on("mousemove", onMove as any);
@@ -377,6 +387,7 @@ export function attachMapInteractions(
   map.on("click", onClick as any);
 
   return {
+    selectByRoomId,
     destroy() {
       map.off("mousemove", onMove as any);
       map.off("mouseleave", onLeave as any);

@@ -1,0 +1,442 @@
+[
+  {
+    "id": "room-3ar104",
+    "label": "B_04",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR104"
+  },
+  {
+    "id": "room-03r001",
+    "label": "Exposition space 3",
+    "hint": "expo-space",
+    "type": "expo-space",
+    "category": "expo-space",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R001"
+  },
+  {
+    "id": "room-03r105",
+    "label": "B_05",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R105"
+  },
+  {
+    "id": "room-3ar001",
+    "label": "Exposition space 3A",
+    "hint": "expo-space",
+    "type": "expo-space",
+    "category": "expo-space",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR001"
+  },
+  {
+    "id": "room-3ar108",
+    "label": "B_08",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR108"
+  },
+  {
+    "id": "room-03r109",
+    "label": "B_09",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R109"
+  },
+  {
+    "id": "room-03r102",
+    "label": "B_02",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R102"
+  },
+  {
+    "id": "room-03r003",
+    "label": "MTP Bistro",
+    "hint": "gastro",
+    "type": "gastro",
+    "category": "gastro",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R003"
+  },
+  {
+    "id": "room-03r104",
+    "label": "B_04",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R104"
+  },
+  {
+    "id": "room-3ar109",
+    "label": "B_09",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR109"
+  },
+  {
+    "id": "room-3ar107",
+    "label": "B_07",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR107"
+  },
+  {
+    "id": "room-3ar103",
+    "label": "B_03",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR103"
+  },
+  {
+    "id": "room-03r113",
+    "label": "B_13",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R113"
+  },
+  {
+    "id": "room-03r002",
+    "label": "MTP Cafe",
+    "hint": "gastro",
+    "type": "gastro",
+    "category": "gastro",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R002"
+  },
+  {
+    "id": "room-03r111",
+    "label": "B_11",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R111"
+  },
+  {
+    "id": "room-03r101",
+    "label": "B_01",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R101"
+  },
+  {
+    "id": "room-3ar105",
+    "label": "B_05",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR105"
+  },
+  {
+    "id": "room-3ar114",
+    "label": "B_14",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR114"
+  },
+  {
+    "id": "room-03r106",
+    "label": "B_06",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R106"
+  },
+  {
+    "id": "room-3ar106",
+    "label": "B_06",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR106"
+  },
+  {
+    "id": "room-3ar002",
+    "label": "Toalety",
+    "hint": "toilet",
+    "type": "toilet",
+    "category": "toilet",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR002"
+  },
+  {
+    "id": "room-3ar102",
+    "label": "B_02",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR102"
+  },
+  {
+    "id": "room-3ar110",
+    "label": "B_10",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR110"
+  },
+  {
+    "id": "room-3ar003",
+    "label": "MTP Cafe",
+    "hint": "gastro",
+    "type": "gastro",
+    "category": "gastro",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR003"
+  },
+  {
+    "id": "room-03r114",
+    "label": "B_14",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R114"
+  },
+  {
+    "id": "room-03r108",
+    "label": "B_08",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R108"
+  },
+  {
+    "id": "room-03r112",
+    "label": "B_12",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R112"
+  },
+  {
+    "id": "room-03r110",
+    "label": "B_10",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R110"
+  },
+  {
+    "id": "room-03r005",
+    "label": "Kierownik Pawilonu",
+    "hint": "office",
+    "type": "office",
+    "category": "office",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R005"
+  },
+  {
+    "id": "room-3ar101",
+    "label": "B_01",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR101"
+  },
+  {
+    "id": "room-03r107",
+    "label": "B_07",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R107"
+  },
+  {
+    "id": "room-03r15a",
+    "label": "B_5A",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R15A"
+  },
+  {
+    "id": "room-03r103",
+    "label": "B_03",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R103"
+  },
+  {
+    "id": "room-3ar113",
+    "label": "B_13",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR113"
+  },
+  {
+    "id": "room-3ar112",
+    "label": "B_12",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR112"
+  },
+  {
+    "id": "room-3ar111",
+    "label": "B_11",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR111"
+  },
+  {
+    "id": "room-03r006",
+    "label": "Biuro Targów",
+    "hint": "office",
+    "type": "office",
+    "category": "office",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R006"
+  },
+  {
+    "id": "room-03r007",
+    "label": "Biuro Rejonu",
+    "hint": "office",
+    "type": "office",
+    "category": "office",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R007"
+  },
+  {
+    "id": "room-03r116",
+    "label": "B_16",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R116"
+  },
+  {
+    "id": "room-3ar115",
+    "label": "B_15",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR115"
+  },
+  {
+    "id": "room-03r004",
+    "label": "Toalety",
+    "hint": "toilet",
+    "type": "toilet",
+    "category": "toilet",
+    "buildingId": "P_03",
+    "floorId": "00",
+    "featureId": "03R004"
+  },
+  {
+    "id": "room-3ar15a",
+    "label": "B_5A",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR15A"
+  },
+  {
+    "id": "room-3ar11a",
+    "label": "B_1A",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR11A"
+  },
+  {
+    "id": "room-3ar116",
+    "label": "B_16",
+    "hint": "booth",
+    "type": "booth",
+    "category": "booth",
+    "buildingId": "P_3A",
+    "floorId": "00",
+    "featureId": "3AR116"
+  }
+]

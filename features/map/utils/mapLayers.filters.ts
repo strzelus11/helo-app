@@ -9,27 +9,36 @@ export function legacyMatch(names: readonly string[]) {
   return ["in", PROP.LAYER_FALLBACK, ...names] as const;
 }
 
-export function legacyAny(names: readonly string[]) {
-  return ["in", PROP.LAYER_FALLBACK, ...names] as const;
-}
-
 export function buildingFilter(buildingId?: string) {
   if (!buildingId) return ["all"] as const;
   return ["==", PROP.BUILDING, buildingId] as const;
 }
 
-function normalizeLevel(level?: number | string) {
-  if (level === undefined || level === null) return null;
-  if (typeof level === "number") return String(level).padStart(2, "0");
-  const s = String(level);
-  if (!s) return null;
-  return s.length === 1 ? s.padStart(2, "0") : s;
+function getLevelCandidates(level?: number | string) {
+  if (level === undefined || level === null)
+    return [] as Array<string | number>;
+
+  const raw = String(level).trim();
+  if (!raw) return [] as Array<string | number>;
+
+  const candidates = new Set<string | number>([raw]);
+
+  const numeric = Number(raw);
+  if (!Number.isNaN(numeric)) {
+    candidates.add(numeric);
+    candidates.add(String(numeric));
+    candidates.add(String(numeric).padStart(2, "0"));
+  }
+
+  return Array.from(candidates);
 }
 
 export function levelFilter(level?: number | string) {
-  const lv = normalizeLevel(level);
-  if (!lv) return ["all"] as const;
-  return ["==", PROP.LEVEL, lv] as const;
+  const candidates = getLevelCandidates(level);
+  if (candidates.length === 0) return ["all"] as const;
+  if (candidates.length === 1)
+    return ["==", PROP.LEVEL, candidates[0]] as const;
+  return ["in", PROP.LEVEL, ...candidates] as const;
 }
 
 export function scoped(
@@ -52,7 +61,7 @@ export function polygonOnly(filter: any) {
 // Feature-class filters with legacy fallback
 export function roomFilter(buildingId?: string, level?: number | string) {
   return scoped(
-    ["any", classFilter("room"), legacyAny(LEGACY.rooms)],
+    ["any", classFilter("room"), legacyMatch(LEGACY.rooms)],
     buildingId,
     level,
   );
@@ -64,7 +73,7 @@ export function boothFilter(buildingId?: string, level?: number | string) {
       "any",
       ["all", classFilter("room"), ["==", PROP.TYPE, "booth"]],
       classFilter("booth"),
-      legacyAny(LEGACY.booths),
+      legacyMatch(LEGACY.booths),
     ],
     buildingId,
     level,
@@ -91,7 +100,7 @@ export function roadFilter(buildingId?: string, level?: number | string) {
       "any",
       classFilter("road"),
       classFilter("roads"),
-      ["==", PROP.LAYER_FALLBACK, LEGACY.roads],
+      // legacyMatch(LEGACY.roads),
     ],
     buildingId,
     level,
@@ -104,7 +113,7 @@ export function toiletsFilter(buildingId?: string, level?: number | string) {
       "any",
       ["all", classFilter("room"), ["==", PROP.TYPE, "toilet"]],
       ["all", classFilter("poi"), ["==", PROP.TYPE, "toilet"]],
-      ["==", PROP.LAYER_FALLBACK, LEGACY.toilets],
+      // legacyMatch(LEGACY.toilets),
     ],
     buildingId,
     level,
@@ -117,7 +126,7 @@ export function gastroFilter(buildingId?: string, level?: number | string) {
       "any",
       ["all", classFilter("room"), ["==", PROP.TYPE, "gastro"]],
       ["all", classFilter("poi"), ["==", PROP.TYPE, "gastro"]],
-      ["==", PROP.LAYER_FALLBACK, LEGACY.gastro],
+      // legacyMatch(LEGACY.gastro),
     ],
     buildingId,
     level,

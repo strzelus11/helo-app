@@ -5,14 +5,12 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 
 export type InitialBounds = [[number, number], [number, number]] | null;
-export type UserLocation = [number, number] | null; // [lng, lat]
 
 export type MapFeature = {
   id: string;
@@ -22,6 +20,12 @@ export type MapFeature = {
   buildingId?: string;
   floorId?: string;
   description?: string;
+};
+
+export type MapFocusRequest = {
+  roomId: string;
+  buildingId?: string;
+  floorId?: string;
 };
 
 export type MapScope = {
@@ -35,15 +39,14 @@ export type MapContextValue = {
   setMap: (map: MapLibreMap | null) => void;
   initialBounds: InitialBounds;
   setInitialBounds: (bounds: InitialBounds) => void;
-  userLocation: UserLocation;
-  setUserLocation: (location: UserLocation) => void;
   selectedFeature: MapFeature | null;
   setSelectedFeature: (feature: MapFeature | null) => void;
+  selectFeature: (feature: MapFeature | null) => void;
   clearSelectedFeature: () => void;
+  focusRequest: MapFocusRequest | null;
+  requestFocus: (req: MapFocusRequest | null) => void;
+  clearFocusRequest: () => void;
   mapScope: MapScope;
-  setActiveVenueId: (venueId: string | null) => void;
-  setActiveBuildingId: (buildingId: string | null) => void;
-  setActiveFloorId: (floorId: string | null) => void;
   setMapScope: (scope: Partial<MapScope>) => void;
 };
 
@@ -56,8 +59,10 @@ type MapProviderProps = {
 export function MapProvider({ children }: MapProviderProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [initialBounds, setInitialBounds] = useState<InitialBounds>(null);
-  const [userLocation, setUserLocation] = useState<UserLocation>(null);
   const [selectedFeature, setSelectedFeature] = useState<MapFeature | null>(
+    null,
+  );
+  const [focusRequest, setFocusRequest] = useState<MapFocusRequest | null>(
     null,
   );
   const [mapScope, setMapScopeState] = useState<MapScope>({
@@ -66,49 +71,20 @@ export function MapProvider({ children }: MapProviderProps) {
     activeFloorId: null,
   });
 
-  useEffect(() => {
-    if (!("geolocation" in navigator)) {
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { longitude, latitude } = position.coords;
-        setUserLocation([longitude, latitude]);
-      },
-      (error) => {
-        console.warn("Geolocation error:", error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-      },
-    );
-  }, []);
-
   const clearSelectedFeature = useCallback(() => {
     setSelectedFeature(null);
   }, []);
 
-  const setActiveVenueId = useCallback((venueId: string | null) => {
-    setMapScopeState((currentScope) => ({
-      ...currentScope,
-      activeVenueId: venueId,
-    }));
+  const selectFeature = useCallback((feature: MapFeature | null) => {
+    setSelectedFeature(feature);
   }, []);
 
-  const setActiveBuildingId = useCallback((buildingId: string | null) => {
-    setMapScopeState((currentScope) => ({
-      ...currentScope,
-      activeBuildingId: buildingId,
-    }));
+  const requestFocus = useCallback((req: MapFocusRequest | null) => {
+    setFocusRequest(req);
   }, []);
 
-  const setActiveFloorId = useCallback((floorId: string | null) => {
-    setMapScopeState((currentScope) => ({
-      ...currentScope,
-      activeFloorId: floorId,
-    }));
+  const clearFocusRequest = useCallback(() => {
+    setFocusRequest(null);
   }, []);
 
   const setMapScope = useCallback((scope: Partial<MapScope>) => {
@@ -124,15 +100,14 @@ export function MapProvider({ children }: MapProviderProps) {
       setMap,
       initialBounds,
       setInitialBounds,
-      userLocation,
-      setUserLocation,
       selectedFeature,
       setSelectedFeature,
+      selectFeature,
       clearSelectedFeature,
+      focusRequest,
+      requestFocus,
+      clearFocusRequest,
       mapScope,
-      setActiveVenueId,
-      setActiveBuildingId,
-      setActiveFloorId,
       setMapScope,
     }),
     [
@@ -141,11 +116,11 @@ export function MapProvider({ children }: MapProviderProps) {
       map,
       mapScope,
       selectedFeature,
-      setActiveBuildingId,
-      setActiveFloorId,
-      setActiveVenueId,
       setMapScope,
-      userLocation,
+      focusRequest,
+      requestFocus,
+      clearFocusRequest,
+      selectFeature,
     ],
   );
 

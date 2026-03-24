@@ -9,10 +9,6 @@ import { useNavigationPanelState } from "@features/navigation/hooks/useNavigatio
 
 import { NavigationPanelActiveContent } from "../content/NavigationPanelActiveContent";
 
-function ActiveNavigationContent() {
-  return <div className="text-[1.4rem] text-foreground">Active navigation</div>;
-}
-
 function ArrivalContent() {
   return <div className="text-[1.4rem] text-foreground">Arrival</div>;
 }
