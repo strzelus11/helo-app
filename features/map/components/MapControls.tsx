@@ -5,7 +5,7 @@ import { FloatingIconButton } from "@shared/ui/FloatingIconButton";
 import { Plus, Minus, LocateFixed } from "lucide-react";
 
 export function MapControls() {
-  const { map, initialBounds, userLocation } = useMapContext();
+  const { map, initialBounds } = useMapContext();
 
   const handleZoomIn = () => {
     if (!map) return;
@@ -28,17 +28,17 @@ export function MapControls() {
     });
   };
 
-  const handleRecenterUser = () => {
-    if (!map || !userLocation) return;
+  // const handleRecenterUser = () => {
+  //   if (!map) return;
 
-    map.easeTo({
-      center: userLocation,
-      zoom: 19,
-      duration: 500,
-      bearing: 0,
-      pitch: 0,
-    });
-  };
+  //   map.easeTo({
+  //     center: userLocation,
+  //     zoom: 19,
+  //     duration: 500,
+  //     bearing: 0,
+  //     pitch: 0,
+  //   });
+  // };
 
   return (
     <div className="pointer-events-none absolute right-4 top-24 z-40 flex flex-col gap-2">
